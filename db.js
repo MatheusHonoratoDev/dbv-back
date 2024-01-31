@@ -1,7 +1,7 @@
-const mysql2 = require('mysql2/promise');
+// db.js
+import mysql2 from "mysql2";
 
-// Configurações do banco de dados
-const dbConfig = {
+export const db = mysql2.createPool({
     host: "sql.freedb.tech",
     user: "freedb_bdclube-user",
     password: "Ca*qBXp$&9bHq9R",
@@ -9,34 +9,26 @@ const dbConfig = {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
-};
+});
 
-const pool = mysql2.createPool(dbConfig);
-
-async function executeQuery(sql, values) {
-    let connection;
-    try {
-        connection = await pool.getConnection();
-
-        const [rows, fields] = await connection.execute(sql, values);
-
-        return rows;
-    } catch (error) {
-        throw error;
-    } finally {
-        if (connection) {
-            connection.release();
-        }
+db.on('error', (err) => {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        console.log('Conexão com o banco de dados perdida. Tentando reconectar...');
+        db.getConnection((connectionError, connection) => {
+            if (connectionError) {
+                throw connectionError;
+            } else {
+                console.log('Reconexão bem-sucedida.');
+                connection.release();
+            }
+        });
+    } else {
+        throw err;
     }
-}
+});
 
-async function exemplo() {
-    try {
-        const resultado = await executeQuery("SELECT * FROM sua_tabela");
-        console.log(resultado);
-    } catch (erro) {
-        console.error("Erro ao executar a consulta:", erro);
-    }
+// Função para executar consultas
+export async function executeQuery(sql, values) {
+    const [rows, fields] = await pool.execute(sql, values);
+    return rows;
 }
-
-exemplo();

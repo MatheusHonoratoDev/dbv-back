@@ -22,7 +22,6 @@
     "ngx-stars": "^1.6.5",
     "nodemon": "^2.0.22",
     "qrcode": "^1.5.3",
-    "sharp": "^0.28.2",
     "wbm": "^1.1.16"
   },
   "description": ""

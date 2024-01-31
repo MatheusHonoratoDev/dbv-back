@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(cors());
 app.use("/", userRoutes);
 
-const PORT = 8800;
+const PORT = process.env.PORT || 8800; 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
